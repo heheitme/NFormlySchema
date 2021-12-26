@@ -1,0 +1,21 @@
+[
+  {
+    "key": "Name",
+    "type": "input"
+  },
+  {
+    "key": "OrderBy",
+    "type": "input",
+    "templateOptions": {
+      "type": "number"
+    }
+  },
+  {
+    "key": "BasicCollection",
+    "type": "repeat",
+    "fieldGroupClassName": "Some Name Here",
+    "fieldArray": {
+      "type": "input"
+    }
+  }
+]
