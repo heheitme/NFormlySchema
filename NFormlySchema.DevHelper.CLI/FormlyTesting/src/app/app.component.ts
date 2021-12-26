@@ -65,7 +65,7 @@ export class AppComponent {
         label: 'Investments To Track',
         style: {
           margin: '25px 0 0 0',
-          border: 'solid 2px red'
+          border: 'solid 2px green'
         }
       },
       fieldArray: {
