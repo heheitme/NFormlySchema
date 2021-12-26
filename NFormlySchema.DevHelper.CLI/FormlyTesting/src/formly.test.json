@@ -1,21 +1,44 @@
 [
   {
     "key": "Name",
-    "type": "input"
+    "type": "input",
+    "templateOptions": {
+      "label": "Name"
+    }
   },
   {
     "key": "OrderBy",
     "type": "input",
     "templateOptions": {
+      "label": "OrderBy",
       "type": "number"
     }
   },
   {
     "key": "BasicCollection",
     "type": "repeat",
-    "fieldGroupClassName": "Some Name Here",
     "fieldArray": {
       "type": "input"
     }
+  },
+  {
+    "key": "TheAddress",
+    "fieldGroupClassName": "TheAddress",
+    "fieldGroup": [
+      {
+        "key": "Street",
+        "type": "input",
+        "templateOptions": {
+          "label": "Street"
+        }
+      },
+      {
+        "key": "City",
+        "type": "input",
+        "templateOptions": {
+          "label": "City"
+        }
+      }
+    ]
   }
 ]

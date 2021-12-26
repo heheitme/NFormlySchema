@@ -21,16 +21,29 @@ namespace NFormlySchema.DevHelper.CLI
 
 
 
-    class SampleForm
+    public class SampleForm
     {
-        [DisplayName]
+        [DisplayName("Name")]
         public string Name { get; set; }
 
-        [DisplayName]
+        [DisplayName("OrderBy")]
         public int? OrderBy { get; set; }
 
-        [DisplayName]
-        [FieldGroup(ClassName = "Some Name Here")]
         public string[] BasicCollection { get; set; }
+
+        [FieldGroup(ClassName = "TheAddress")]
+        public Address TheAddress { get; set; }
+
+        public class Address
+        {
+
+            [DisplayName("Street")]
+            public string Street { get; set; }
+
+
+            [DisplayName("City")]
+            public string City { get; set; }
+        }
+
     }
 }

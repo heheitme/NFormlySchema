@@ -9,10 +9,14 @@ import { FormlyModule } from '@ngx-formly/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { PanelWrapperComponent } from './panel-wrapper/panel-wrapper.component';
+import { RepeatSectionComponent } from './repeat-section/repeat-section.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    PanelWrapperComponent,
+    RepeatSectionComponent
   ],
   imports: [
     BrowserModule,
@@ -21,6 +25,12 @@ import { AppComponent } from './app.component';
     ReactiveFormsModule,
     FormlyBootstrapModule,
     FormlyModule.forRoot({
+      types: [
+        { name: 'repeat', component: RepeatSectionComponent },
+      ],
+      wrappers: [
+        { name: 'panel', component: PanelWrapperComponent },
+      ],
       validationMessages: [
         { name: 'required', message: 'This field is required' },
       ],
