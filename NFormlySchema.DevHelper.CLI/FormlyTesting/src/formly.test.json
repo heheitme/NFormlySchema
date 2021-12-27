@@ -22,7 +22,7 @@
     }
   },
   {
-    "key": "TheAddress",
+    "key": "TheAddressList",
     "fieldGroupClassName": "TheAddress",
     "fieldGroup": [
       {

@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Runtime.Serialization;
 using FluentAssertions;
 using Newtonsoft.Json;
@@ -117,7 +118,7 @@ namespace NFormlySchema.UnitTests
                     },
                     Validation = new Validation
                     {
-                        Messages = new MessageDictionary {{"required", "Custom"}}
+                        Messages = new MessageDictionary { { "required", "Custom" } }
                     }
                 },
                 new FormlyFieldConfig
@@ -210,7 +211,7 @@ namespace NFormlySchema.UnitTests
                     },
                     Validation = new Validation
                     {
-                        Messages = new MessageDictionary {{"maxLength", "Custom"}}
+                        Messages = new MessageDictionary { { "maxLength", "Custom" } }
                     }
                 },
                 new FormlyFieldConfig
@@ -223,7 +224,7 @@ namespace NFormlySchema.UnitTests
                     },
                     Validation = new Validation
                     {
-                        Messages = new MessageDictionary {{"minLength", "Custom"}}
+                        Messages = new MessageDictionary { { "minLength", "Custom" } }
                     }
                 },
                 new FormlyFieldConfig
@@ -293,7 +294,7 @@ namespace NFormlySchema.UnitTests
                 {
                     Key = nameof(Foo.CustomWrapper),
                     Type = "input",
-                    Wrappers = new WrapperCollection {"panel1", "panel2"}
+                    Wrappers = new WrapperCollection { "panel1", "panel2" }
                 },
                 new FormlyFieldConfig
                 {
@@ -599,7 +600,118 @@ namespace NFormlySchema.UnitTests
 
             _testOutputHelper.WriteLine(schema.ToJson());
         }
+
+
+
+        [Fact]
+        public void CustomObjectFieldArray()
+        {
+            _testOutputHelper.WriteLine($"Last Run: {DateTime.Now:MM/dd/yyyy HH:mm:ss}\n");
+            // act
+            var schema = FormlySchema.FromType<CustomObjectFieldArrayFactRoot>();
+            var actualJson = schema.ToJson();
+
+            var jArrayActual = JArray.Parse(actualJson);
+
+            var jAACollection = jArrayActual.Children().FirstOrDefault(s => s["key"]?.ToString() == "OrderedItems");
+
+            _testOutputHelper.WriteLine(@"Collection Is:");
+            _testOutputHelper.WriteLine(jAACollection.ToString(Formatting.Indented));
+
+            _testOutputHelper.WriteLine(@"
+Collection Should Be:
+{
+    ""key"": ""OrderedItems"",
+    ""type"": ""'repeat'"",
+    ""fieldArray"": {
+      ""fieldGroup"": [
+        {
+          ""key"": ""ItemKey"",
+          ""type"": ""input""
+        },
+        {
+          ""key"": ""ItemPrice"",
+          ""type"": ""input""
+        },
+        {
+          ""key"": ""ItemQuantity"",
+          ""type"": ""input""
+        }
+      ]
     }
+  }");
+
+
+
+            var expectedOutput = @"[
+  {
+    ""key"": ""PurchaseOrderRef"",
+    ""type"": ""input""
+  },
+  {
+    ""key"": ""PurchaseTimestamp"",
+    ""type"": ""input"",
+    ""templateOptions"": {
+      ""type"": ""datetime-local""
+    }
+  },
+  {
+    ""key"": ""OrderedItems"",
+    ""type"": ""'repeat'"",
+    ""fieldArray"": {
+      ""fieldGroup"": [
+        {
+          ""key"": ""ItemKey"",
+          ""type"": ""input""
+        },
+        {
+          ""key"": ""ItemPrice"",
+          ""type"": ""input""
+        },
+        {
+          ""key"": ""ItemQuantity"",
+          ""type"": ""input""
+        }
+      ]
+    }
+  }
+]";
+
+
+
+            var _condensedAO = JsonConvert.SerializeObject(jArrayActual, Formatting.None);
+            _testOutputHelper.WriteLine($"\nActual Output:\n{_condensedAO}");
+
+            var _condensedEO = JsonConvert.SerializeObject(JArray.Parse(expectedOutput), Formatting.None);
+            _testOutputHelper.WriteLine($"Expected Output:\n{_condensedEO}");
+
+
+            _testOutputHelper.WriteLine("Actual:\n" + actualJson);
+
+            _testOutputHelper.WriteLine("Expected:\n" + expectedOutput);
+
+            //   Assert.Equal(expectedOutput, actualJson);
+        }
+    }
+
+
+    internal class CustomObjectFieldArrayFactRoot
+    {
+        public string PurchaseOrderRef { get; set; }
+        public DateTime PurchaseTimestamp { get; set; }
+        public FieldArrayItem[] OrderedItems { get; set; }
+
+        internal class FieldArrayItem
+        {
+            public string ItemKey { get; set; }
+
+            public decimal ItemPrice { get; set; }
+
+            public int ItemQuantity { get; set; }
+
+        }
+    }
+
 
     internal class EmptyType
     {
