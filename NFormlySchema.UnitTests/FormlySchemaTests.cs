@@ -610,7 +610,6 @@ namespace NFormlySchema.UnitTests
             // act
             var schema = FormlySchema.FromType<CustomObjectFieldArrayRoot<FieldArrayItem[]>>();
 
-
             var expected = new FormlyFieldConfigCollection
             {
                 new FormlyFieldConfig{
@@ -655,16 +654,17 @@ namespace NFormlySchema.UnitTests
 
             // assert
             schema.Should().BeEquivalentTo(expected);
-
-            // act
-            schema = FormlySchema.FromType<CustomObjectFieldArrayRoot<IEnumerable<FieldArrayItem>>>();
             LogSchema(schema);
-            LogSchema(expected);
-            //schema.Should().BeEquivalentTo(expected);
+
+
         }
     }
 
-
+    /// <summary>
+    /// Made this generic incase adding support for different types of arrays/enumerables/etc
+    /// Can just change the type of the array and run the test case
+    /// </summary>
+    /// <typeparam name="FieldArrayType">Collection/Array/Enumerable for the "collection property"</typeparam>
     internal class CustomObjectFieldArrayRoot<FieldArrayType>
     {
         public string PurchaseOrderRef { get; set; }
