@@ -144,11 +144,8 @@ namespace NFormlySchema
         {
             var arrayElementType = pi.PropertyType.GetElementType();
             var fieldGroupForArrayElement = FromType(arrayElementType, settings);
-
-            var attributes = Array.Empty<Attribute>();
             var formlyFieldConfig = new FormlyFieldConfig
             {
-                Type = ResolveFieldType(pi.PropertyType, attributes),
                 FieldGroup = fieldGroupForArrayElement
             };
             return formlyFieldConfig;

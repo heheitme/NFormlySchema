@@ -8,6 +8,7 @@ using FluentAssertions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NFormlySchema.Generation;
+using NFormlySchema.Samples.Shared;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -608,43 +609,57 @@ namespace NFormlySchema.UnitTests
         public void CustomObjectFieldArray()
         {
             // act
-            var schema = FormlySchema.FromType<CustomObjectFieldArrayRoot<FieldArrayItem[]>>();
+            var schema = FormlySchema.FromType<CustomObjectFieldArrayRoot>();
 
             var expected = new FormlyFieldConfigCollection
             {
                 new FormlyFieldConfig{
                     Key= "PurchaseOrderRef",
-                    Type = "input"
+                    Type = "input",
+                    TemplateOptions= new FormlyTemplateOptions{
+                        Label = "Purchase Order Ref"
+                    }
                 },
                 new FormlyFieldConfig{
                     Key= "PurchaseTimestamp",
                     Type = "input",
                     TemplateOptions = new FormlyTemplateOptions{
-                        Type = "datetime-local"
+                        Type = "datetime-local",
+                        Label = "Purchase Timestamp"
                     }
                 },
                 new FormlyFieldConfig{
                     Key= "OrderedItems",
                     Type = "repeat",
+                    Wrappers = new WrapperCollection{
+                     "panel"
+                    },
+                    TemplateOptions = new FormlyTemplateOptions{
+                        Label = "Ordered Items"
+                    },
                     FieldArray = new FormlyFieldConfig{
-                        Type= "repeat",
                         FieldGroup = new FormlyFieldConfigCollection{
                             new FormlyFieldConfig{
                             Key = "ItemKey",
-                            Type = "input"
+                            Type = "input",
+                            TemplateOptions = new FormlyTemplateOptions{
+                                    Label = "Item Key"
+                                }
                             },
                         new FormlyFieldConfig{
                             Key = "ItemPrice",
                             Type = "input",
                             TemplateOptions = new FormlyTemplateOptions{
-                                    Type = "number"
+                                    Type = "number",
+                                    Label = "Item Price"
                                 }
                             },
                         new FormlyFieldConfig{
                             Key = "ItemQuantity",
                             Type = "input",
                             TemplateOptions = new FormlyTemplateOptions{
-                                    Type = "number"
+                                    Type = "number",
+                                    Label = "Item Quantity"
                                 }
                             }
                         }
@@ -652,36 +667,17 @@ namespace NFormlySchema.UnitTests
                 }
             };
 
+            _testOutputHelper.WriteLine($"Expected == Actual: {expected.ToJson() == schema.ToJson()}");
+
+            _testOutputHelper.WriteLine($"Expected:\n {expected.ToJson()}");
+            _testOutputHelper.WriteLine($"Actual:\n {schema.ToJson()}");
+
             // assert
             schema.Should().BeEquivalentTo(expected);
-            LogSchema(schema);
-
 
         }
     }
 
-    /// <summary>
-    /// Made this generic incase adding support for different types of arrays/enumerables/etc
-    /// Can just change the type of the array and run the test case
-    /// </summary>
-    /// <typeparam name="FieldArrayType">Collection/Array/Enumerable for the "collection property"</typeparam>
-    internal class CustomObjectFieldArrayRoot<FieldArrayType>
-    {
-        public string PurchaseOrderRef { get; set; }
-        public DateTime PurchaseTimestamp { get; set; }
-        public FieldArrayType OrderedItems { get; set; }
-
-
-    }
-    internal class FieldArrayItem
-    {
-        public string ItemKey { get; set; }
-
-        public decimal ItemPrice { get; set; }
-
-        public int ItemQuantity { get; set; }
-
-    }
 
     internal class EmptyType
     {

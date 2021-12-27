@@ -1,3 +1,4 @@
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -21,7 +22,7 @@ import { RepeatSectionComponent } from './repeat-section/repeat-section.componen
   imports: [
     BrowserModule,
     AppRoutingModule,
-
+    HttpClientModule,
     ReactiveFormsModule,
     FormlyBootstrapModule,
     FormlyModule.forRoot({
