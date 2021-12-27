@@ -140,14 +140,17 @@ namespace NFormlySchema
             return formlyFieldConfig;
         }
 
-        private static FormlyFieldConfig BuildFormlyFieldConfigForCustomArrayElement(Type propertyType)
+        private static FormlyFieldConfig BuildFormlyFieldConfigForCustomArrayElement(PropertyInfo pi, FormlyGenerationSettings settings)
         {
+            var arrayElementType = pi.PropertyType.GetElementType();
+            var fieldGroupForArrayElement = FromType(arrayElementType, settings);
+
             var attributes = Array.Empty<Attribute>();
             var formlyFieldConfig = new FormlyFieldConfig
             {
-                Type = ResolveFieldType(propertyType, attributes) +"custom",
+                Type = ResolveFieldType(pi.PropertyType, attributes),
+                FieldGroup = fieldGroupForArrayElement
             };
-
             return formlyFieldConfig;
         }
 
@@ -162,7 +165,7 @@ namespace NFormlySchema
             if (elementType.IsSimple())
                 return BuildFormlyFieldConfigForSimpleArrayElement(elementType);
             else
-                return BuildFormlyFieldConfigForCustomArrayElement(elementType);
+                return BuildFormlyFieldConfigForCustomArrayElement(propertyInfo, setting);
 
             // return null; // TODO
         }

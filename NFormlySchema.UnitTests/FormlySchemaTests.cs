@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -606,112 +607,81 @@ namespace NFormlySchema.UnitTests
         [Fact]
         public void CustomObjectFieldArray()
         {
-            _testOutputHelper.WriteLine($"Last Run: {DateTime.Now:MM/dd/yyyy HH:mm:ss}\n");
             // act
-            var schema = FormlySchema.FromType<CustomObjectFieldArrayFactRoot>();
-            var actualJson = schema.ToJson();
-
-            var jArrayActual = JArray.Parse(actualJson);
-
-            var jAACollection = jArrayActual.Children().FirstOrDefault(s => s["key"]?.ToString() == "OrderedItems");
-
-            _testOutputHelper.WriteLine(@"Collection Is:");
-            _testOutputHelper.WriteLine(jAACollection.ToString(Formatting.Indented));
-
-            _testOutputHelper.WriteLine(@"
-Collection Should Be:
-{
-    ""key"": ""OrderedItems"",
-    ""type"": ""'repeat'"",
-    ""fieldArray"": {
-      ""fieldGroup"": [
-        {
-          ""key"": ""ItemKey"",
-          ""type"": ""input""
-        },
-        {
-          ""key"": ""ItemPrice"",
-          ""type"": ""input""
-        },
-        {
-          ""key"": ""ItemQuantity"",
-          ""type"": ""input""
-        }
-      ]
-    }
-  }");
+            var schema = FormlySchema.FromType<CustomObjectFieldArrayRoot<FieldArrayItem[]>>();
 
 
+            var expected = new FormlyFieldConfigCollection
+            {
+                new FormlyFieldConfig{
+                    Key= "PurchaseOrderRef",
+                    Type = "input"
+                },
+                new FormlyFieldConfig{
+                    Key= "PurchaseTimestamp",
+                    Type = "input",
+                    TemplateOptions = new FormlyTemplateOptions{
+                        Type = "datetime-local"
+                    }
+                },
+                new FormlyFieldConfig{
+                    Key= "OrderedItems",
+                    Type = "repeat",
+                    FieldArray = new FormlyFieldConfig{
+                        Type= "repeat",
+                        FieldGroup = new FormlyFieldConfigCollection{
+                            new FormlyFieldConfig{
+                            Key = "ItemKey",
+                            Type = "input"
+                            },
+                        new FormlyFieldConfig{
+                            Key = "ItemPrice",
+                            Type = "input",
+                            TemplateOptions = new FormlyTemplateOptions{
+                                    Type = "number"
+                                }
+                            },
+                        new FormlyFieldConfig{
+                            Key = "ItemQuantity",
+                            Type = "input",
+                            TemplateOptions = new FormlyTemplateOptions{
+                                    Type = "number"
+                                }
+                            }
+                        }
+                    }
+                }
+            };
 
-            var expectedOutput = @"[
-  {
-    ""key"": ""PurchaseOrderRef"",
-    ""type"": ""input""
-  },
-  {
-    ""key"": ""PurchaseTimestamp"",
-    ""type"": ""input"",
-    ""templateOptions"": {
-      ""type"": ""datetime-local""
-    }
-  },
-  {
-    ""key"": ""OrderedItems"",
-    ""type"": ""'repeat'"",
-    ""fieldArray"": {
-      ""fieldGroup"": [
-        {
-          ""key"": ""ItemKey"",
-          ""type"": ""input""
-        },
-        {
-          ""key"": ""ItemPrice"",
-          ""type"": ""input""
-        },
-        {
-          ""key"": ""ItemQuantity"",
-          ""type"": ""input""
-        }
-      ]
-    }
-  }
-]";
+            // assert
+            schema.Should().BeEquivalentTo(expected);
 
-
-
-            var _condensedAO = JsonConvert.SerializeObject(jArrayActual, Formatting.None);
-            _testOutputHelper.WriteLine($"\nActual Output:\n{_condensedAO}");
-
-            var _condensedEO = JsonConvert.SerializeObject(JArray.Parse(expectedOutput), Formatting.None);
-            _testOutputHelper.WriteLine($"Expected Output:\n{_condensedEO}");
-
-
-            _testOutputHelper.WriteLine("Actual:\n" + actualJson);
-
-            _testOutputHelper.WriteLine("Expected:\n" + expectedOutput);
-
-            //   Assert.Equal(expectedOutput, actualJson);
+            // act
+            schema = FormlySchema.FromType<CustomObjectFieldArrayRoot<IEnumerable<FieldArrayItem>>>();
+            LogSchema(schema);
+            LogSchema(expected);
+            //schema.Should().BeEquivalentTo(expected);
         }
     }
 
 
-    internal class CustomObjectFieldArrayFactRoot
+    internal class CustomObjectFieldArrayRoot<FieldArrayType>
     {
         public string PurchaseOrderRef { get; set; }
         public DateTime PurchaseTimestamp { get; set; }
-        public FieldArrayItem[] OrderedItems { get; set; }
+        public FieldArrayType OrderedItems { get; set; }
 
-        internal class FieldArrayItem
-        {
-            public string ItemKey { get; set; }
 
-            public decimal ItemPrice { get; set; }
-
-            public int ItemQuantity { get; set; }
-
-        }
     }
+    internal class FieldArrayItem
+    {
+        public string ItemKey { get; set; }
 
+        public decimal ItemPrice { get; set; }
+
+        public int ItemQuantity { get; set; }
+
+    }
 
     internal class EmptyType
     {
